@@ -1,0 +1,34 @@
+{
+    "LSTM - Random Oversampling": {
+        "accuracy": 0.96,
+        "f1": 0.94
+    },
+    "BiLSTM - Random Oversampling": {
+        "accuracy": 0.96,
+        "f1": 0.94
+    },
+    "LSTM - SMOTE": {
+        "accuracy": 0.91,
+        "f1": 0.88
+    },
+    "BiLSTM - SMOTE": {
+        "accuracy": 0.91,
+        "f1": 0.88
+    },
+    "LSTM - Adasyn": {
+        "accuracy": 0.91,
+        "f1": 0.88
+    },
+    "BiLSTM - Adasyn": {
+        "accuracy": 0.90,
+        "f1": 0.87
+    },
+    "LSTM - Non Resampling": {
+        "accuracy": 0.96,
+        "f1": 0.94
+    },
+    "BiLSTM - Non Resampling": {
+        "accuracy": 0.96,
+        "f1": 0.94
+    }
+}
