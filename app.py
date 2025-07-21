@@ -16,7 +16,6 @@ from collections import defaultdict
 # --- 1. Konfigurasi Halaman & Download Resource ---
 st.set_page_config(
     page_title="Analisis Sentimen Profesional",
-    page_icon="✨",
     layout="wide"
 )
 
@@ -65,7 +64,13 @@ def load_all_assets():
     
     # Muat Stemmer Sastrawi
     try:
-        custom_dictionary = {'pengalaman': 'pengalaman', 'penggunaan': 'guna', 'makanan': 'makan', 'pelayanan': 'pelayanan'}
+        custom_dictionary = {
+            'pengalaman': 'pengalaman', 
+            'penggunaan': 'guna', 
+            'makanan': 'makan', 
+            'pelayanan': 'pelayanan',
+            'berguna': 'berguna'
+            }
         assets["stemmer"] = CustomSastrawiStemmer(custom_dictionary)
     except Exception as e:
         st.error(f"KRITIS: Gagal memuat Stemmer. Error: {e}")
@@ -164,7 +169,7 @@ with st.spinner("Mempersiapkan semua aset dan model AI... Ini hanya dilakukan se
 # --- 4. Variabel Global & Fungsi-Fungsi Inti ---
 MAX_SEQUENCE_LEN = 30
 ID_TO_LABEL = {0: 'Negatif', 1: 'Netral', 2: 'Positif'}
-SENTIMENT_EMOJI_MAP = {'Positif': '😊', 'Negatif': '😠', 'Netral': '😐', 'Tidak Dikenal': '❓'}
+SENTIMENT_EMOJI_MAP = {'Positif': '', 'Negatif': '', 'Netral': '', 'Tidak Dikenal': ''}
 
 def preprocess_text(text, return_steps=False):
     """Pipeline preprocessing teks yang WAJIB SAMA dengan saat pelatihan model."""
@@ -260,8 +265,8 @@ with st.sidebar:
     with st.expander("**Bagaimana Cara Kerjanya?**", expanded=False):
         st.write("""
         Aplikasi ini menggunakan dua pendekatan utama untuk menganalisis sentimen:
-        1.  **Deep Learning:** Teks Anda diproses (cleaning, normalisasi, stemming) lalu diumpankan ke model AI (seperti LSTM & BiLSTM) untuk memprediksi sentimen.
-        2.  **Lexicon-Based:** Setiap kata dalam teks dicocokkan dengan kamus sentimen untuk dihitung total skornya.
+        1. **Deep Learning:** Teks Anda diproses (cleaning, normalisasi, stemming) lalu diumpankan ke model AI (seperti LSTM & BiLSTM) untuk memprediksi sentimen.
+        2. **Lexicon-Based:** Setiap kata dalam teks dicocokkan dengan kamus sentimen untuk dihitung total skornya.
         Deep Learning umumnya lebih akurat karena mampu memahami konteks.
         """)
     st.subheader("Perbandingan Kinerja Umum Model")
@@ -319,7 +324,6 @@ with main_container:
         placeholder="Contoh: Aplikasi ini luar biasa, fiturnya sangat membantu dan mudah digunakan!"
     )
     
-    # PERUBAHAN: Menghapus blok 'if text:' yang salah dan hanya menggunakan alur tombol.
     if st.button("Analisis Sekarang!", type="primary", use_container_width=True):
         if not user_input.strip() or len(user_input.split()) < 2:
             st.warning("Mohon masukkan minimal dua kata untuk hasil analisis yang lebih baik.")
@@ -331,7 +335,6 @@ with main_container:
                 final_processed_text = preprocessing_steps['stemming']
                 
                 model_predictions = predict_sentiment_all_models(final_processed_text)
-                # PERUBAHAN: Memanggil fungsi lexicon yang sudah diperbaiki
                 lex_score, lex_polarity, lex_details = analyze_sentiment_lexicon(final_processed_text)
                 highlighted_text = highlight_sentiment_words(user_input)
 
@@ -340,7 +343,7 @@ with main_container:
 
             best_prediction = model_predictions[0] if model_predictions else {'sentiment': 'Error', 'confidence': 0, 'model_name': 'N/A'}
             main_sentiment, main_confidence = best_prediction['sentiment'], best_prediction['confidence']
-            main_emoji = SENTIMENT_EMOJI_MAP.get(main_sentiment, '❓')
+            main_emoji = SENTIMENT_EMOJI_MAP.get(main_sentiment, '')
             
             st.markdown(f"### Hasil Prediksi Utama: **{main_sentiment}** {main_emoji}")
             st.caption(f"Hasil dari model dengan keyakinan prediksi tertinggi pada teks ini: **{best_prediction['model_name']}** ({main_confidence:.2%}).")
@@ -353,22 +356,21 @@ with main_container:
             ])
 
             with tab1:
-                # ... (Tidak ada perubahan di tab ini)
                 st.subheader("Perbandingan Hasil Metode")
                 st.write("Perbandingan antara hasil prediksi model AI (Deep Learning) dengan metode berbasis kamus (Lexicon).")
                 col1, col2 = st.columns(2)
                 with col1:
                     with st.container(border=True):
                         st.markdown("<div style='text-align: center;'><strong>Deep Learning (Model Terbaik)</strong></div>", unsafe_allow_html=True)
-                        if main_sentiment == "Positif": st.success(f"**{main_sentiment}** {main_emoji}", icon="✅")
-                        elif main_sentiment == "Negatif": st.error(f"**{main_sentiment}** {main_emoji}", icon="❌")
-                        else: st.info(f"**{main_sentiment}** {main_emoji}", icon="ℹ️")
+                        if main_sentiment == "Positif": st.success(f"**{main_sentiment}** {main_emoji}")
+                        elif main_sentiment == "Negatif": st.error(f"**{main_sentiment}** {main_emoji}")
+                        else: st.info(f"**{main_sentiment}** {main_emoji}")
                         st.metric(label="Tingkat Keyakinan", value=f"{main_confidence:.2%}")
                 with col2:
                     with st.container(border=True):
                         st.markdown("<div style='text-align: center;'><strong>Lexicon-Based</strong></div>", unsafe_allow_html=True)
-                        if lex_polarity == "Positif": st.success(f"**{lex_polarity}** ")
-                        elif lex_polarity == "Negatif": st.error(f"**{lex_polarity}** ")
+                        if lex_polarity == "Positif": st.success(f"**{lex_polarity}**")
+                        elif lex_polarity == "Negatif": st.error(f"**{lex_polarity}**")
                         else: st.info(f"**{lex_polarity}**")
                         st.metric(label="Total Skor Leksikon", value=f"{lex_score:.2f}")
                 st.divider()
@@ -378,7 +380,6 @@ with main_container:
 
 
             with tab2:
-                # ... (Tidak ada perubahan di tab ini)
                 st.subheader("Langkah-langkah Preprocessing Teks")
                 st.write("Berikut adalah tahapan pemrosesan yang dilalui teks Anda sebelum dianalisis oleh model AI.")
                 with st.expander("Lihat Detail Langkah demi Langkah", expanded=True):
@@ -399,7 +400,6 @@ with main_container:
 
 
             with tab3:
-                # PERUBAHAN: Menampilkan detail transparansi leksikon di sini.
                 st.subheader("Detail Analisis Berbasis Leksikon & Transparansi")
                 st.write("Rincian kata-kata bermuatan sentimen yang ditemukan dalam teks (setelah diproses) dan sumber skornya.")
 
@@ -431,7 +431,6 @@ with main_container:
                                 st.caption(f"Sumber: {sources_str}")
 
             with tab4:
-                # ... (Tidak ada perubahan di tab ini)
                 st.subheader("Perbandingan Prediksi Antar Model Deep Learning")
                 st.write("Setiap model AI yang tersedia memberikan prediksinya masing-masing. Hasil dengan keyakinan tertinggi dipilih sebagai output utama.")
                 if model_predictions:
