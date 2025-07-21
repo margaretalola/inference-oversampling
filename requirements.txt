@@ -1,8 +1,8 @@
-streamlit
-pandas
-numpy
-tensorflow
-scikit-learn
-nltk
-Sastrawi
-plotly
+streamlit==1.38.0
+pandas==2.2.3
+numpy==1.26.4
+tensorflow==2.18.0
+scikit-learn==1.6.1
+nltk==3.9.1
+Sastrawi==1.0.1
+plotly==6.2.0
