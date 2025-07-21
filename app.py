@@ -264,7 +264,7 @@ with st.sidebar:
         2.  **Lexicon-Based:** Setiap kata dalam teks dicocokkan dengan kamus sentimen untuk dihitung total skornya.
         Deep Learning umumnya lebih akurat karena mampu memahami konteks.
         """)
-    st.subheader("📈 Perbandingan Kinerja Umum Model")
+    st.subheader("Perbandingan Kinerja Umum Model")
     model_scores = loaded_assets.get('model_scores', {})
     if model_scores:
         st.markdown("Grafik ini menunjukkan perbandingan metrik evaluasi dari setiap model pada data uji terpisah.")
