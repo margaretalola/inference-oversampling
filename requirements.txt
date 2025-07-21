@@ -7,3 +7,4 @@ Sastrawi==1.0.1
 plotly==5.18.0
 requests==2.31.0
 pickle5==0.0.11
+keras==2.10.0
